@@ -1,20 +1,30 @@
 pipeline {
-  agent none
-  stages {
-    stage('Back-end') {
-      agent {
-        docker { image 'maven:3.8.1-adoptopenjdk-11' }
-      }
-      steps {
-        sh 'mvn --version'
-      }
+  agent {
+    docker {
+      image 'node:26-alpine'
+      alwaysPull true
     }
-    stage('Front-end') {
-      agent {
-        docker { image 'node:16-alpine' }
-      }
+  }
+  stages {
+    stage('Check Versions') {
       steps {
         sh 'node --version'
+        sh 'npm --version'
+      }
+    }
+    stage('Install Dependencies') {
+      steps {
+        sh 'npm ci'
+      }
+    }
+    stage('Build') {
+      steps {
+        sh 'npm run build'
+      }
+    }
+    stage('Test') {
+      steps {
+        sh 'npm test'
       }
     }
   }
