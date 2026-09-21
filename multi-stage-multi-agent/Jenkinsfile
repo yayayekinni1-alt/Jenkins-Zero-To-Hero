@@ -1,31 +1,21 @@
 pipeline {
-  agent {
-    docker {
-      image 'node:26-alpine'
-      alwaysPull true
-    }
-  }
+  agent none
   stages {
-    stage('Check Versions') {
-      steps {
-        sh 'node --version'
-        sh 'npm --version'
-      }
-    }
-    stage('Install Dependencies') {
-      steps {
-        sh 'npm ci'
-      }
+    stage('Prepare') {
+      agent { docker { image 'node:26-alpine' } }
+      steps { checkout scm; sh 'npm ci'; stash includes: '**', name: 'all' }
     }
     stage('Build') {
-      steps {
-        sh 'npm run build'
-      }
+      agent { docker { image 'node:26-alpine' } }
+      steps { unstash 'all'; sh 'npm run build'; stash includes: 'dist/**', name: 'out' }
     }
     stage('Test') {
-      steps {
-        sh 'npm test'
-      }
+      agent { docker { image 'node:26-alpine' } }
+      steps { unstash 'all'; sh 'npm test' }
+    }
+    stage('Deploy') {
+      agent { docker { image 'docker:latest' } }
+      steps { unstash 'out'; sh 'docker build -t app .' }
     }
   }
 }
