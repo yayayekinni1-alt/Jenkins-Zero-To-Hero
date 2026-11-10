@@ -16,7 +16,15 @@ pipeline {
         }
         stage('Clone & Build') {
             steps {
-                sh 'git clone https://github.com/yayayekinni1-alt/Jenkins-Zero-To-Hero.git .'
+                sh '''
+                    if [ -d .git ]; then
+                      echo "Repo exists, pulling latest..."
+                      git pull origin main
+                    else
+                      echo "Cloning fresh repo..."
+                      git clone https://github.com/yayayekinni1-alt/Jenkins-Zero-To-Hero.git .
+                    fi
+                '''
                 sh 'ls -ltr'
                 dir('java-maven-sonar-argocd-helm-k8s/spring-boot-app') {
                     sh 'mvn clean package -DskipTests'
