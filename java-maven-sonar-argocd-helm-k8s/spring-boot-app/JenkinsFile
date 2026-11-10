@@ -8,9 +8,9 @@ pipeline {
         }
         stage('Build and Login') {
             steps {
-                sh '''docker run -d --name my-maven -u root \\
+                sh '''docker run -it --name my-maven -u root \\
   -v /var/run/docker.sock:/var/run/docker.sock \\
-  abhishekf5/maven-abhishek-docker-agent:v1 \\
+  abhishekf5/maven-abhishek-docker-agent:v1 bin/bash\\
   tail -f /dev/null'''
             }
         }
