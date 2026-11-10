@@ -1,19 +1,22 @@
 pipeline {
     agent any
     stages {
-        stage('clone') {
+        stage('Pull') {
             steps {
-                sh 'git clone https://github.com/yayayekinni1-alt/Jenkins-Zero-To-Hero.git'
+                sh 'docker pull abhishekf5/maven-abhishek-docker-agent:v1'
             }
         }
-        stage('Build and Test') {
-            agent {
-                docker {
-                    image 'abhishekf5/maven-abhishek-docker-agent:v1'
-                    args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
-                }
-            }
+        stage('Build and Login') {
             steps {
+                sh '''docker run -d --name my-maven -u root \\
+  -v /var/run/docker.sock:/var/run/docker.sock \\
+  abhishekf5/maven-abhishek-docker-agent:v1 \\
+  tail -f /dev/null'''
+            }
+        }
+        stage('Clone') {
+            steps {
+                sh 'git clone https://github.com/yayayekinni1-alt/Jenkins-Zero-To-Hero.git .'
                 sh 'ls -ltr'
                 dir('java-maven-sonar-argocd-helm-k8s/spring-boot-app') {
                     sh 'mvn clean package -DskipTests'
@@ -21,9 +24,6 @@ pipeline {
             }
         }
         stage('Static Code Analysis') {
-            options {
-                skipDefaultCheckout true
-            }
             environment {
                 SONAR_URL = "http://54.204.119.41:9000"
             }
@@ -56,17 +56,15 @@ pipeline {
                 GIT_USER_NAME = "yayayekinni1-alt"
             }
             steps {
-                dir('.') {
-                    withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
-                        sh '''
-                            git config user.email "yayayekinni1-alt@users.noreply.github.com"
-                            git config user.name "${GIT_USER_NAME}"
-                            sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
-                            git add java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
-                            git commit -m "Update deployment image to version ${BUILD_NUMBER}" || echo "No changes to commit"
-                            git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git HEAD:main
-                        '''
-                    }
+                withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
+                    sh '''
+                        git config user.email "yayayekinni1-alt@users.noreply.github.com"
+                        git config user.name "${GIT_USER_NAME}"
+                        sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
+                        git add java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
+                        git commit -m "Update deployment image to version ${BUILD_NUMBER}" || echo "No changes to commit"
+                        git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git HEAD:main
+                    '''
                 }
             }
         }
