@@ -16,7 +16,7 @@ pipeline {
         }
        stage('use shell') {
             steps {
-                sh 'docker exec -it abhishekf5/maven-abhishek-docker-agent:v1'
+                sh 'docker exec -it my-maven /bin/bash'
               }
         }      
        stage('Clone') {
