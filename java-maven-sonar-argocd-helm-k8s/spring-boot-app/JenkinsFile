@@ -6,7 +6,7 @@ pipeline {
                 sh 'docker pull abhishekf5/maven-abhishek-docker-agent:v1'
             }
         }
-       stage('Build') {
+        stage('Start Maven Container') {
             steps {
                 sh '''docker run -d --name my-maven -u root \\
   -v /var/run/docker.sock:/var/run/docker.sock \\
@@ -14,12 +14,7 @@ pipeline {
   tail -f /dev/null'''
             }
         }
-       stage('use shell') {
-            steps {
-                sh 'docker exec -it my-maven /bin/bash'
-              }
-        }      
-       stage('Clone') {
+        stage('Clone & Build') {
             steps {
                 sh 'git clone https://github.com/yayayekinni1-alt/Jenkins-Zero-To-Hero.git .'
                 sh 'ls -ltr'
@@ -71,6 +66,11 @@ pipeline {
                         git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git HEAD:main
                     '''
                 }
+            }
+        }
+        stage('Cleanup') {
+            steps {
+                sh 'docker rm -f my-maven || true'
             }
         }
     }
