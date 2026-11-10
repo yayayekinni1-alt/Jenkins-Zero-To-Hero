@@ -42,7 +42,7 @@ pipeline {
     stage('Build and Push Docker Image') {
       environment {
         DOCKER_IMAGE = "iamyekinniyayaisaiah/ultimate-cicd:${BUILD_NUMBER}"
-        DOCKER_API_VERSION = "1.44"   // ✅ Fixes "client version is too old" error
+        DOCKER_API_VERSION = "1.44"
       }
       steps {
         dir('java-maven-sonar-argocd-helm-k8s/spring-boot-app') {
