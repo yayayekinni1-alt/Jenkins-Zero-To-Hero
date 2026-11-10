@@ -10,8 +10,7 @@ pipeline {
             steps {
                 sh '''docker run -it --name my-maven -u root \\
   -v /var/run/docker.sock:/var/run/docker.sock \\
-  abhishekf5/maven-abhishek-docker-agent:v1 bin/bash\\
-  tail -f /dev/null'''
+  abhishekf5/maven-abhishek-docker-agent:v1 /bin/bash'''
             }
         }
         stage('Clone') {
