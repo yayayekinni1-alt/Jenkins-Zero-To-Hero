@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: spring-boot-app
-        image: iamyekinniyayaisaiah/ultimate-cicd:19
+        image: iamyekinniyayaisaiah/python-web-app:v1
         ports:
         - containerPort: 8080
