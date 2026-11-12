@@ -11,11 +11,11 @@ pipeline {
     }
     stage('Test') {
       agent { docker { image 'node:jod-alpine3.24' } }
-      steps { unstash 'all'; sh 'ls -a' }
+      steps { sh 'ls -a' }
     }
     stage('Deploy') {
       agent { docker { image 'docker:latest' } }
-      steps { unstash 'out'; sh 'echo yaya' }
+      steps { sh 'echo yaya' }
     }
   }
 }
