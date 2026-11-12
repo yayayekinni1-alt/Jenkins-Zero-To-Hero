@@ -3,7 +3,9 @@ pipeline {
   stages {
     stage('Prepare') {
       agent { docker { image 'node:22.23-alpine' } }
-      steps { checkout scm; sh 'npm ci'; stash includes: '**', name: 'all' }
+      }
+      steps {
+        sh 'mvn --version'
     }
     stage('Build') {
       agent { docker { image 'node:22.23-alpine' } }
