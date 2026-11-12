@@ -3,7 +3,7 @@ pipeline {
   stages {
     stage('Prepare') {
       agent { docker { image 'node:jod-alpine3.24' } }
-      steps { checkout scm; sh 'npm ci'; stash includes: '**', name: 'all' }
+      steps { checkout scm; sh 'node --version'; stash includes: '**', name: 'all' }
     }
     stage('Build') {
       agent { docker { image 'node:jod-alpine3.24' } }
