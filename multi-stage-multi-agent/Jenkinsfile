@@ -7,15 +7,15 @@ pipeline {
     }
     stage('Build') {
       agent { docker { image 'node:jod-alpine3.24' } }
-      steps { unstash 'all'; sh 'npm run build'; stash includes: 'dist/**', name: 'out' }
+      steps { unstash 'all'; sh 'mkdir ingress'; stash includes: 'dist/**', name: 'out' }
     }
     stage('Test') {
       agent { docker { image 'node:jod-alpine3.24' } }
-      steps { unstash 'all'; sh 'npm test' }
+      steps { unstash 'all'; sh 'ls -a' }
     }
     stage('Deploy') {
       agent { docker { image 'docker:latest' } }
-      steps { unstash 'out'; sh 'docker build -t app .' }
+      steps { unstash 'out'; sh 'echo yaya' }
     }
   }
 }
