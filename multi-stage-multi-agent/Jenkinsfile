@@ -2,17 +2,15 @@ pipeline {
   agent none
   stages {
     stage('Prepare') {
-      agent { docker { image 'node:22.23-alpine' } }
-      }
-      steps {
-        sh 'mvn --version'
+      agent { docker { image 'node:jod-alpine3.24' } }
+      steps { checkout scm; sh 'npm ci'; stash includes: '**', name: 'all' }
     }
     stage('Build') {
-      agent { docker { image 'node:22.23-alpine' } }
+      agent { docker { image 'node:jod-alpine3.24' } }
       steps { unstash 'all'; sh 'npm run build'; stash includes: 'dist/**', name: 'out' }
     }
     stage('Test') {
-      agent { docker { image 'node:22.23-alpine' } }
+      agent { docker { image 'node:jod-alpine3.24' } }
       steps { unstash 'all'; sh 'npm test' }
     }
     stage('Deploy') {
