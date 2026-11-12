@@ -7,7 +7,7 @@ pipeline {
     }
     stage('Build') {
       agent { docker { image 'node:jod-alpine3.24' } }
-      steps { unstash 'all'; sh 'rm -r ingress'; stash includes: 'dist/**', name: 'all' }
+      steps sh 'rm -r ingress'
     }
     stage('Test') {
       agent { docker { image 'node:jod-alpine3.24' } }
